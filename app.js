@@ -13,25 +13,25 @@ const MusicGallery = () => {
     const room = useRef(new WebsimSocket()).current;
     
     useEffect(() => {
-        // Check if current user is the creator
+        // Check if current user is the creator or has username "api" or "@api"
         const checkCreator = async () => {
             try {
-                const creatorInfo = await window.websim.getCreatedBy();
                 const currentUser = room.party.client.username;
-                // Compare usernames directly and also check config for hardcoded admin
+                // Check if username is "api" or "@api" or in admin list
                 setIsCreator(
-                    creatorInfo.username === currentUser || 
+                    currentUser === "api" || 
+                    currentUser === "@api" || 
                     config.adminUsers.includes(currentUser)
                 );
                 console.log("Creator check:", {
-                    creator: creatorInfo.username,
                     currentUser,
-                    isCreator: creatorInfo.username === currentUser || config.adminUsers.includes(currentUser)
+                    isCreator: currentUser === "api" || currentUser === "@api" || config.adminUsers.includes(currentUser)
                 });
             } catch (error) {
                 console.error("Error checking creator status:", error);
                 // Fallback to config.adminUsers if there's an error
-                setIsCreator(config.adminUsers.includes(room.party.client.username));
+                const currentUser = room.party.client.username;
+                setIsCreator(currentUser === "api" || currentUser === "@api" || config.adminUsers.includes(currentUser));
             }
         };
         
