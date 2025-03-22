@@ -17,10 +17,21 @@ const MusicGallery = () => {
         const checkCreator = async () => {
             try {
                 const creatorInfo = await window.websim.getCreatedBy();
-                const isCreator = creatorInfo.username === room.party.client.username;
-                setIsCreator(isCreator);
+                const currentUser = room.party.client.username;
+                // Compare usernames directly and also check config for hardcoded admin
+                setIsCreator(
+                    creatorInfo.username === currentUser || 
+                    config.adminUsers.includes(currentUser)
+                );
+                console.log("Creator check:", {
+                    creator: creatorInfo.username,
+                    currentUser,
+                    isCreator: creatorInfo.username === currentUser || config.adminUsers.includes(currentUser)
+                });
             } catch (error) {
                 console.error("Error checking creator status:", error);
+                // Fallback to config.adminUsers if there's an error
+                setIsCreator(config.adminUsers.includes(room.party.client.username));
             }
         };
         
@@ -239,4 +250,3 @@ const MusicGallery = () => {
 
 const root = ReactDOM.createRoot(document.getElementById('app'));
 root.render(<MusicGallery />);
-
